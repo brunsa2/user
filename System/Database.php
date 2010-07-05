@@ -3,7 +3,7 @@
 class Database {
 	private $databaseConnection;
 	private $queryResult;
-	private $numberOfresultsTotal, $numberOfResultsLeft;
+	private $numberOfRowsTotal, $numberOfRowsLeft;
 	
 	public function __construct($host, $username, $password, $database) {
 		@ $this->databaseConnection = new mysqli($host, $username, $password, $database);
@@ -14,33 +14,36 @@ class Database {
 	}
 	
 	public function select($table, $fields = '*', $where = '') {
+		$query = '';
 		if($where != '') {
 			@ $this->queryResult = $this->databaseConnection->query('select ' . $fields . ' from ' . $table . ' where ' . $where . ';');
+			$query = 'select ' . $fields . ' from ' . $table . ' where ' . $where . ';';
 		} else {
 			@ $this->queryResult = $this->databaseConnection->query('select ' . $fields . ' from ' . $table . ';');
+			$query = 'select ' . $fields . ' from ' . $table . ';';
 		}
 		
 		if($this->databaseConnection->error) {
-			throw new Exception('Cannot select: ' . $this->databaseConnection->error);
+			throw new Exception('Cannot select (QUERY: ' . $query . ') : ' . $this->databaseConnection->error);
 		}
 		
-		$this->numberOfResultsLeft = $this->numberOfresultsTotal = $this->queryResult->num_rows;
+		$this->numberOfRowsLeft = $this->numberOfRowsTotal = $this->queryResult->num_rows;
 	}
 	
 	public function getNumberOfRowsLeft() {
-		return $this->numberOfResultsLeft;
+		return $this->numberOfRowsLeft;
 	}
 	
 	public function getNumberOfRowsTotal() {
-		return $this->numberOfresultsTotal;
+		return $this->numberOfRowsTotal;
 	}
 	
 	public function hasRow() {
-		return $this->getNumberOfRowsLeft == 0;
+		return $this->numberOfRowsLeft != 0;
 	}
 	
 	public function getRow() {
-		$this->numberOfResultsLeft--;
+		$this->numberOfRowsLeft--;
 		return $this->queryResult->fetch_assoc();
 	}
 	
