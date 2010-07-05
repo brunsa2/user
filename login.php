@@ -18,17 +18,15 @@ session_start();
 			<input type='button' onclick='javascript: login();' value='Login' />
 		</form>
 		<div id='userInformation'>
-			<p>
 <?php
 
 if(isset($_SESSION['logged-in']) && $_SESSION['logged-in'] == true) {
-	echo $_SESSION['name'];
+	echo '<p> ' . $_SESSION['name'] . '</p><form onsubmit=\'javascript: return 0;\' name=\'logoutForm\'><input type=\'button\' onclick=\'javascript: logout();\' value=\'Logout\' /></form>';
 } else {
-	echo 'You are not logged in';
+	echo '<p>You are not logged in</p>';
 }
 
 ?>
-			</p>
 		</div>
 	</body>
 </html>
